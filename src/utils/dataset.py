@@ -109,13 +109,14 @@ class GoProDataset(Dataset):
         return B_paths
 
     def __getitem__(self, idx):
-        image, label = np.asarray(Image.open(self.A_paths[idx])), np.asarray(Image.open(self.B_paths[idx]))
+        image, label = np.asarray(Image.open(self.A_paths[idx]), dtype=np.float32), np.asarray(Image.open(self.B_paths[idx]), dtype=np.float32)
         image = image / 255.0
         label = label / 255.0
 
         res = self.transform(image=image, image2=label)
         image = res['image']
         label = res['image2']
+        print(image.dtype)
         image, label = self.norm(image), self.norm(label)
 
         return image, label
