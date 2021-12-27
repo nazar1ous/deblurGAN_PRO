@@ -83,14 +83,6 @@ class GoProDataset(Dataset):
         self.A_paths = get_A_paths(dataset_path=image_dir)
         self.B_paths = self.get_GT_sharp_paths()
 
-
-
-        # self.image_dir = image_dir
-        # self.image_list =
-        # self.folders_list = os.listdir(os.path.join(image_dir, 'blur/'))
-        # self.image_list = os.listdir(os.path.join(image_dir, 'blur/', folder) for folder in self.folders_list)
-        # self._check_image(self.image_list)
-        # self.image_list.sort()
         self.transform = transform
 
     def __len__(self):
