@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     trainer = Trainer(
         checkpoint_callback=model_checkpoint_callback,
-        gpus=0,
+        gpus=-1,
         max_epochs=150,
         precision=32,
         weights_summary="full"

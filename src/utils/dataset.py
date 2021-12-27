@@ -109,7 +109,10 @@ class GoProDataset(Dataset):
         # label = Image.open(os.path.join(self.image_dir, 'sharp', self.image_list[idx]))
 
         # As we are given transform for one image, we should apply seed
-        image, label = self.transform(image=image, image2=label)
+        res = self.transform(image=image, image2=label)
+        image = res['image']
+        label = res['image2']
+
         image = F.to_tensor(image)
         label = F.to_tensor(label)
         return image, label
