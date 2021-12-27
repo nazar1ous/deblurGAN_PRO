@@ -29,22 +29,88 @@ def get_test_dataset(path):
     return GoProDataset(image_dir)
 
 
+IMG_EXTENSIONS = [
+    '.jpg', '.JPG', '.jpeg', '.JPEG',
+    '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP',
+]
+
+
+def is_image_file(filename):
+    return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
+
+
+def make_dataset(dir):
+    images = []
+    assert os.path.isdir(dir), '%s is not a valid directory' % dir
+
+    for root, _, fnames in sorted(os.walk(dir)):
+        for fname in fnames:
+            if is_image_file(fname):
+                path = os.path.join(root, fname)
+                images.append(path)
+
+    return images
+
+
+def make_dataset_several(dirs):
+    images = []
+    for dir in dirs:
+        if not os.path.isdir(dir):
+            continue
+        # assert os.path.isdir(dir), '%s is not a valid directory' % dir
+
+        for root, _, fnames in sorted(os.walk(dir)):
+            for fname in fnames:
+                if is_image_file(fname):
+                    path = os.path.join(root, fname)
+                    # print(path)
+                    images.append(path)
+
+    return images
+
+def get_A_paths(dataset_path):
+    subfolders = os.listdir(os.path.join(dataset_path, 'blur'))
+    dirs_A = [os.path.join(dataset_path, 'blur', subfolder) for subfolder in subfolders]
+
+    A_paths = make_dataset_several(dirs_A)
+
+    return A_paths
+
+
 class GoProDataset(Dataset):
     def __init__(self, image_dir, transform=None):
         self.SEED_MAX = 2147483647
+        self.A_paths = get_A_paths(dataset_path=image_dir)
+        self.B_paths = self.get_GT_sharp_paths()
 
-        self.image_dir = image_dir
-        self.image_list = os.listdir(os.path.join(image_dir, 'blur/'))
-        self._check_image(self.image_list)
-        self.image_list.sort()
+
+
+        # self.image_dir = image_dir
+        # self.image_list =
+        # self.folders_list = os.listdir(os.path.join(image_dir, 'blur/'))
+        # self.image_list = os.listdir(os.path.join(image_dir, 'blur/', folder) for folder in self.folders_list)
+        # self._check_image(self.image_list)
+        # self.image_list.sort()
         self.transform = transform
 
     def __len__(self):
-        return len(self.image_list)
+        return len(self.A_paths)
+
+    def get_GT_sharp_paths(self):
+        def change_subpath(path, what_to_change, change_to):
+            p = Path(path)
+            index = p.parts.index(what_to_change)
+            new_path = (Path.cwd().joinpath(*p.parts[:index])).joinpath(Path(change_to),
+                                                                        *p.parts[index + 1:])
+            return new_path
+
+        B_paths = [str(change_subpath(x, 'blur', 'sharp')) for x in self.A_paths]
+        return B_paths
 
     def __getitem__(self, idx):
-        image = Image.open(os.path.join(self.image_dir, 'blur', self.image_list[idx]))
-        label = Image.open(os.path.join(self.image_dir, 'sharp', self.image_list[idx]))
+        image, label = Image.open(self.A_paths[idx]), Image.open(self.B_paths[idx])
+        # image = Image.open(os.path.join(self.image_dir, 'blur', self.image_list[idx]))
+        # label = Image.open(os.path.join(self.image_dir, 'sharp', self.image_list[idx]))
 
         # As we are given transform for one image, we should apply seed
         seed = np.random.randint(self.SEED_MAX)
