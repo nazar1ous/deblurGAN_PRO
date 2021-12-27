@@ -54,13 +54,15 @@ class LightningModule(pl.LightningModule):
         out = self.generator(source)
         return out
 
-    def setup(self):
-        train_dataset = get_train_dataset(self.dataset_path, use_transform=True)
-        valid_space_len = int(0.1 * len(train_dataset))
+    def setup(self, stage):
+        if stage == "fit":
+            train_dataset = get_train_dataset(self.dataset_path, use_transform=True)
+            valid_space_len = int(0.1 * len(train_dataset))
 
-        self.train_dataset, self.valid_dataset = random_split(train_dataset,
-                                                              [len(train_dataset) - valid_space_len, valid_space_len])
-        self.test_dataset = get_test_dataset(self.dataset_path)
+            self.train_dataset, self.valid_dataset = random_split(train_dataset,
+                                                                  [len(train_dataset) - valid_space_len, valid_space_len])
+        elif stage == "test":
+            self.test_dataset = get_test_dataset(self.dataset_path)
 
     def train_dataloader(self):
         DataLoader(
