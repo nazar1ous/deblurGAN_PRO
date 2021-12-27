@@ -116,7 +116,6 @@ class GoProDataset(Dataset):
         res = self.transform(image=image, image2=label)
         image = res['image']
         label = res['image2']
-        print(image.dtype)
         image, label = self.norm(image), self.norm(label)
 
         return image, label
