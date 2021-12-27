@@ -23,7 +23,7 @@ class LightningModule(pl.LightningModule):
                                    n_res_blocks=16)
         self.discriminator = Discriminator(n_blocks=1, base_channels=8)
         self.dataset_path = ""
-        self.batch_size = 8
+        self.batch_size = 2
         self._device = "cuda"
 
         # cache for generated images

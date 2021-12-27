@@ -3,8 +3,10 @@ import numpy as np
 from PIL import Image as Image
 import torch
 import random as rd
-from torchvision.transforms import Compose, RandomCrop, RandomHorizontalFlip, ToTensor
-from torchvision.transforms import functional as F
+# from torchvision.transforms import Compose, RandomCrop, RandomHorizontalFlip, ToTensor
+from albumentations import HorizontalFlip, RandomCrop, CenterCrop, ShiftScaleRotate
+from albumentations.core.composition import Compose
+# from torchvision.transforms import functional as F
 from torch.utils.data import Dataset, DataLoader
 from pathlib import Path
 
@@ -17,10 +19,10 @@ def get_train_dataset(path, use_transform=True):
     if use_transform:
         transform = Compose(
             [
-                RandomCrop(256),
-                RandomHorizontalFlip(),
-                ToTensor()
-            ]
+                RandomCrop(height=256, width=256),
+                HorizontalFlip(p=0.5),
+            ],
+            additional_targets={'image2': 'image'}
         )
     return GoProDataset(image_dir, transform=transform)
 
@@ -107,16 +109,9 @@ class GoProDataset(Dataset):
         # label = Image.open(os.path.join(self.image_dir, 'sharp', self.image_list[idx]))
 
         # As we are given transform for one image, we should apply seed
-        seed = np.random.randint(self.SEED_MAX)
-        if self.transform:
-            rd.seed(seed)
-            image = self.transform(image)
-
-            rd.seed(seed)
-            label = self.transform(label)
-        else:
-            image = F.to_tensor(image)
-            label = F.to_tensor(label)
+        image, label = self.transform(image=image, image2=label)
+        image = F.to_tensor(image)
+        label = F.to_tensor(label)
         return image, label
 
     @staticmethod
