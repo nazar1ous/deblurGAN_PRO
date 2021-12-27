@@ -88,6 +88,9 @@ class GoProDataset(Dataset):
         self.B_paths = self.get_GT_sharp_paths()
 
         self.transform = transform
+        self.norm = transforms.Compose([transforms.ToTensor(),
+                                        transforms.Normalize(mean=[0.5, 0.5, 0.5],
+                                                             std=[0.5, 0.5, 0.5])])
 
     def __len__(self):
         return len(self.A_paths)
@@ -104,17 +107,15 @@ class GoProDataset(Dataset):
         return B_paths
 
     def __getitem__(self, idx):
-        image, label = Image.open(self.A_paths[idx]), Image.open(self.B_paths[idx])
-        # image = Image.open(os.path.join(self.image_dir, 'blur', self.image_list[idx]))
-        # label = Image.open(os.path.join(self.image_dir, 'sharp', self.image_list[idx]))
+        image, label = np.asarray(Image.open(self.A_paths[idx])), np.asarray(Image.open(self.B_paths[idx]))
+        image = image / 255.0
+        label = label / 255.0
 
-        # As we are given transform for one image, we should apply seed
         res = self.transform(image=image, image2=label)
         image = res['image']
         label = res['image2']
+        image, label = self.norm(image), self.norm(label)
 
-        image = F.to_tensor(image)
-        label = F.to_tensor(label)
         return image, label
 
     @staticmethod
