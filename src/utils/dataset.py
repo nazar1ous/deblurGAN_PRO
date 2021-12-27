@@ -8,7 +8,7 @@ from torchvision.transforms import functional as F
 from torch.utils.data import Dataset, DataLoader
 
 
-def get_train_dataloader(path, batch_size=64, num_workers=0, use_transform=True):
+def get_train_dataset(path, use_transform=True):
     image_dir = os.path.join(path, 'train')
 
     transform = None
@@ -20,38 +20,13 @@ def get_train_dataloader(path, batch_size=64, num_workers=0, use_transform=True)
                 ToTensor()
             ]
         )
-    dataloader = DataLoader(
-        GoProDataset(image_dir, transform=transform),
-        batch_size=batch_size,
-        shuffle=True,
-        num_workers=num_workers,
-        pin_memory=True
-    )
-    return dataloader
+    return GoProDataset(image_dir, transform=transform)
 
 
-def get_test_dataloader(path, batch_size=1, num_workers=0):
+def get_test_dataset(path):
     image_dir = os.path.join(path, 'test')
-    dataloader = DataLoader(
-        GoProDataset(image_dir),
-        batch_size=batch_size,
-        shuffle=False,
-        num_workers=num_workers,
-        pin_memory=True
-    )
 
-    return dataloader
-
-
-def get_valid_dataloader(path, batch_size=1, num_workers=0):
-    dataloader = DataLoader(
-        GoProDataset(os.path.join(path, 'valid')),
-        batch_size=batch_size,
-        shuffle=False,
-        num_workers=num_workers
-    )
-
-    return dataloader
+    return GoProDataset(image_dir)
 
 
 class GoProDataset(Dataset):

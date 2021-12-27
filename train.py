@@ -28,7 +28,7 @@ if __name__ == "__main__":
     )
 
     model.train()
-    model.cpu()
+    model.cuda()
     wandb.init(project="deblur-UCU-GAN", entity="nazar1ous")
     wandb.run.name = "First run"
     trainer.fit(model)

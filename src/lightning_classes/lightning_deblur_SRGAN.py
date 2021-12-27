@@ -7,6 +7,7 @@ from torchvision.utils import make_grid
 import wandb
 from src.models.SRGAN import *
 from src.utils.dataset import *
+from torch.utils.data import random_split
 
 
 def get_lr(optimizer):
@@ -23,7 +24,7 @@ class LightningModule(pl.LightningModule):
         self.discriminator = Discriminator(n_blocks=1, base_channels=8)
         self.dataset_path = ""
         self.batch_size = 8
-        self._device = "cpu"
+        self._device = "cuda"
 
         # cache for generated images
         self.last_source_imgs = None
@@ -45,19 +46,44 @@ class LightningModule(pl.LightningModule):
         self.vgg_loss = self._loss.get_vgg_loss
         self.img_loss = self._loss.get_img_loss
         self.disc_loss = self._loss.get_d_loss
+        self.train_dataset = None
+        self.valid_dataset = None
+        self.test_dataset = None
 
     def forward(self, source):
         out = self.generator(source)
         return out
 
+    def setup(self):
+        train_dataset = get_train_dataset(self.dataset_path, use_transform=True)
+        valid_space_len = int(0.1 * len(train_dataset))
+
+        self.train_dataset, self.valid_dataset = random_split(train_dataset,
+                                                              [len(train_dataset) - valid_space_len, valid_space_len])
+        self.test_dataset = get_test_dataset(self.dataset_path)
+
     def train_dataloader(self):
-        return get_train_dataloader(self.dataset_path, self.batch_size, num_workers=4, use_transform=True)
+        DataLoader(
+            self.train_dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=4
+        )
 
     def val_dataloader(self):
-        return get_valid_dataloader(self.dataset_path, self.batch_size, num_workers=4)
-
+        DataLoader(
+            self.valid_dataset,
+            batch_size=self.batch_size,
+            shuffle=False,
+            num_workers=4
+        )
     def test_dataloader(self):
-        return get_test_dataloader(self.dataset_path, self.batch_size, num_workers=4)
+        return DataLoader(
+            self.test_dataset,
+            batch_size=batch_size,
+            shuffle=False,
+         num_workers=num_workers
+        )
 
     def training_step(self, batch, batch_nb, optimizer_idx):
 
