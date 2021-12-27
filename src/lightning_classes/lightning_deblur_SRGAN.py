@@ -65,7 +65,7 @@ class LightningModule(pl.LightningModule):
             self.test_dataset = get_test_dataset(self.dataset_path)
 
     def train_dataloader(self):
-        DataLoader(
+        return DataLoader(
             self.train_dataset,
             batch_size=self.batch_size,
             shuffle=True,
@@ -73,7 +73,7 @@ class LightningModule(pl.LightningModule):
         )
 
     def val_dataloader(self):
-        DataLoader(
+        return DataLoader(
             self.valid_dataset,
             batch_size=self.batch_size,
             shuffle=False,
