@@ -1,0 +1,6 @@
+venv/
+wandb/
+model_weights/
+lightning_logs/
+__pycache__
+
