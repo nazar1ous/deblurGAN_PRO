@@ -4,6 +4,8 @@ from PIL import Image as Image
 import torch
 import random as rd
 # from torchvision.transforms import Compose, RandomCrop, RandomHorizontalFlip, ToTensor
+import torchvision.transforms as transforms
+
 from albumentations import HorizontalFlip, RandomCrop, CenterCrop, ShiftScaleRotate
 from albumentations.core.composition import Compose
 # from torchvision.transforms import functional as F
