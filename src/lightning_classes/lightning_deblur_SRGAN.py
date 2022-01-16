@@ -5,9 +5,11 @@ from pytorch_lightning.metrics.regression import PSNR, SSIM
 from torch import cat, stack
 from torchvision.utils import make_grid
 import wandb
-from src.models.SRGAN import *
 from src.utils.dataset import *
 from torch.utils.data import random_split
+from src.models.get_models import get_generator, get_discriminator
+from omegaconf import DictConfig
+from src.models.SRGAN import Loss
 
 
 def get_lr(optimizer):
@@ -16,21 +18,20 @@ def get_lr(optimizer):
 
 
 class LightningModule(pl.LightningModule):
-    def __init__(self):
+    def __init__(self, cfg: DictConfig):
         super().__init__()
-        self.generator = Generator(base_channels=64,
-                                   n_ps_blocks=0,
-                                   n_res_blocks=16)
-        self.discriminator = Discriminator(n_blocks=1, base_channels=8)
-        self.dataset_path = ""
-        self.batch_size = 2
-        self._device = "cuda"
+        self.cfg = cfg
+        self.generator = get_generator(self.cfg.generator.name)
+        self.discriminator = get_discriminator(self.cfg.discriminator.name)
+        self.dataset_path = self.cfg.dataset.folder_path
+        self.batch_size = self.cfg.data.batch_size
+        self._device = self.cfg.data.device
 
         # cache for generated images
         self.last_source_imgs = None
         self.last_generated_imgs = None
         self.last_gt_target_imgs = None
-        self._usewandb = True
+        self._usewandb = self.cfg.wandb.use_wandb
 
         self._cur_train_epoch = 0
         self._cur_valid_epoch = 0
@@ -57,7 +58,7 @@ class LightningModule(pl.LightningModule):
     def setup(self, stage):
         if stage == "fit":
             train_dataset = get_train_dataset(self.dataset_path, use_transform=True)
-            valid_space_len = int(0.1 * len(train_dataset))
+            valid_space_len = int(self.cfg.dataset.valid_percentage * len(train_dataset))
 
             self.train_dataset, self.valid_dataset = random_split(train_dataset,
                                                                   [len(train_dataset) - valid_space_len, valid_space_len])
@@ -69,7 +70,7 @@ class LightningModule(pl.LightningModule):
             self.train_dataset,
             batch_size=self.batch_size,
             shuffle=True,
-            num_workers=4
+            num_workers=self.cfg.data.num_workers
         )
 
     def val_dataloader(self):
@@ -77,14 +78,14 @@ class LightningModule(pl.LightningModule):
             self.valid_dataset,
             batch_size=self.batch_size,
             shuffle=False,
-            num_workers=4
+            num_workers=self.cfg.data.num_workers
         )
     def test_dataloader(self):
         return DataLoader(
             self.test_dataset,
             batch_size=self.batch_size,
             shuffle=False,
-         num_workers=4
+         num_workers=self.cfg.data.num_workers
         )
 
     def training_step(self, batch, batch_nb, optimizer_idx):

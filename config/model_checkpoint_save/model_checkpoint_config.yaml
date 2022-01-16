@@ -1,0 +1,6 @@
+params:
+  monitor: "avg_val_psnr_value"
+  save_top_k: 4
+  filepath: /home/nazarii/deblurGAN_UCU/save_models/{epoch}-{avg_val_ssim_value:.3f}-{avg_val_psnr_value:.3f}
+  save_last: True
+  period: 10

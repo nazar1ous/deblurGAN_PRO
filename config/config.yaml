@@ -1,0 +1,13 @@
+defaults:
+  - generator: srgan
+  - discriminator: srgan
+  - dataset: GOPRO
+  - data: srgan
+  - wandb: config
+  - model_checkpoint_save: model_checkpoint_config
+  - trainer: one_trainer
+  - adv_loss: srgan
+#general:
+#  generator: srgan
+#  discriminator: omry
+#  pass: secret

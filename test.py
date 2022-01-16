@@ -1,11 +1,12 @@
-from pytorch_lightning.metrics.regression import PSNR, SSIM
+from torchmetrics import PSNR, SSIM
 from tqdm import tqdm
 import numpy as np
 import torch
 from src.lightning_classes.lightning_deblur_SRGAN import LightningModule
+from src.models.SRGAN import Generator
 
 
-def test_model_inference_time(model, input_tensor, warmup_num=100, step_num=1000):
+def test_model_inference_time(model, input_tensor, warmup_num=100, step_num=100):
     model.cuda()
     for i in range(warmup_num):
         with torch.no_grad():
@@ -55,10 +56,15 @@ def test_model_metrics(model, test_dataloader):
 
 
 if __name__ == "__main__":
-    lm = LightningModule()
-    weight_path = ""
-    lm = lm.load_from_checkpoint(weight_path)
-    lm.setup(stage="test")
-    model = lm.generator
-    test_dataloader = lm.test_dataloader()
+    gen = Generator()
+    tensor = torch.ones((1, 3, 256, 256)).cuda()
+
+    res = test_model_inference_time(model=gen, input_tensor=tensor).mean()
+    print(res)
+    # lm = LightningModule()
+    # weight_path = ""
+    # lm = lm.load_from_checkpoint(weight_path)
+    # lm.setup(stage="test")
+    # model = lm.generator
+    # test_dataloader = lm.test_dataloader()
 
