@@ -2,7 +2,7 @@ from torchmetrics import PSNR, SSIM
 from tqdm import tqdm
 import numpy as np
 import torch
-from src.lightning_classes.lightning_deblur_SRGAN import LightningModule
+from src.lightning_classes.lightning_deblur import LightningModule
 from src.models.SRGAN import Generator
 
 

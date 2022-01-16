@@ -1,6 +1,6 @@
 from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
-from src.lightning_classes.lightning_deblur_SRGAN import LightningModule
+from src.lightning_classes.lightning_deblur import LightningModule
 import wandb
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -10,6 +10,9 @@ CONFIG_PATH = "config"
 
 @hydra.main(config_path=CONFIG_PATH, config_name="config")
 def run_train(cfg : DictConfig) -> None:
+    # Look at the config before training
+    print(OmegaConf.to_yaml(cfg))
+
     model = LightningModule(cfg=cfg)
     model_checkpoint_callback = ModelCheckpoint(**cfg.model_checkpoint_save.params)
 
