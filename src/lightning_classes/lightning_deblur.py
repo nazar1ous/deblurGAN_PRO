@@ -50,7 +50,10 @@ class LightningModule(pl.LightningModule):
         self.disc_loss = self._loss.get_loss
 
         self.adv_loss_lambda = self.cfg.adv_loss.loss_lambda
-        self.l1_loss_lambda = self.cfg.loss.l1.loss_lambda
+        self.l1_loss_lambda = self.cfg.generator_basic_loss.l1.loss_lambda
+        # TODO will be used in the future
+        self.fft_loss_lambda = self.cfg.generator_basic_loss.fft_loss.loss_lambda
+
 
         self.train_dataset = None
         self.valid_dataset = None
@@ -114,8 +117,7 @@ class LightningModule(pl.LightningModule):
             self.generated = self(source=source)
             self.generated.requires_grad = True
             pass_to_disc = self.generated.clone()
-            d_loss = self.disc_loss(self.discriminator,
-                                    pass_to_disc, self.last_gt_target_imgs)
+            d_loss = self.disc_loss(net=self.discriminator, fakeB=pass_to_disc, realB=self.last_gt_target_imgs)
 
             tqdm_dict = {'d_loss_train_step': d_loss.detach().clone(),
                          "batch_step": self.global_step * self.batch_size}
@@ -127,11 +129,8 @@ class LightningModule(pl.LightningModule):
 
         # train generator
         if optimizer_idx == 1:
-            # self.generated = self(source=self.last_source_imgs)
-            adv_loss = self.adv_loss(self.discriminator, self.generated, self.last_gt_target_imgs)
-            l1_loss_ = l1_loss(self.generated, self.last_gt_target_imgs)
-            # vgg_loss = self.vgg_loss(self.last_gt_target_imgs, self.generated)
-            # img_loss = self.img_loss(self.last_gt_target_imgs, self.generated)
+            adv_loss = self.adv_loss_lambda * self.adv_loss(self.discriminator, self.generated, self.last_gt_target_imgs)
+            l1_loss_ = self.l1_loss_lambda * l1_loss(self.generated, self.last_gt_target_imgs)
             g_loss = adv_loss + l1_loss_
 
             generated = self.generated.detach().clone()
@@ -143,8 +142,7 @@ class LightningModule(pl.LightningModule):
 
             tqdm_dict = {'g_loss_train_step': g_loss.detach().clone(),
                          'adv_loss_train_step': adv_loss.detach().clone(),
-                         # 'vgg_loss_train_step': vgg_loss.detach().clone(),
-                         # 'img_loss_train_step': img_loss.detach().clone(),
+                         'l1_loss_train_step': l1_loss_.detach().clone(),
                          "ssim_value_train_step": ssim_value.detach().clone(),
                          "psnr_value_train_step": psnr_value.detach().clone(),
                          "batch_step": self.global_step * self.batch_size
@@ -182,9 +180,8 @@ class LightningModule(pl.LightningModule):
             print(str(e))
 
         avg_g_loss = torch.stack([x['log']['g_loss_train_step'] for x in outputs[1]]).mean()
-        # avg_img_loss = torch.stack([x['log']['img_loss_train_step'] for x in outputs[0]]).mean()
+        avg_l1_loss = torch.stack([x['log']['l1_loss_train_step'] for x in outputs[1]]).mean()
         avg_adv_loss = torch.stack([x['log']['adv_loss_train_step'] for x in outputs[1]]).mean()
-        # avg_vgg_loss = torch.stack([x['log']['vgg_loss_train_step'] for x in outputs[0]]).mean()
         avg_d_loss = torch.stack([x['log']['d_loss_train_step'] for x in outputs[0]]).mean()
         avg_ssim_value = torch.stack([x['log']['ssim_value_train_step'] for x in outputs[1]]).mean()
         avg_psnr_value = torch.stack([x['log']['psnr_value_train_step'] for x in outputs[1]]).mean()
@@ -192,8 +189,7 @@ class LightningModule(pl.LightningModule):
         tqdm_dict = {'avg_train_g_loss': avg_g_loss,
                      'avg_train_d_loss': avg_d_loss,
                      'avg_train_adv_loss': avg_adv_loss,
-                     # 'avg_train_vgg_loss': avg_vgg_loss,
-                     # 'avg_train_img_loss': avg_img_loss,
+                     'avg_train_l1_loss': avg_l1_loss,
                      "avg_train_ssim_value": avg_ssim_value,
                      "avg_train_psnr_value": avg_psnr_value,
                      'epoch': self.current_epoch,
@@ -308,26 +304,31 @@ class LightningModule(pl.LightningModule):
 
     def configure_optimizers(self):
         generator_optimizer = torch.optim.Adam(self.generator.parameters(),
-                                               lr=1e-4)
+                                               lr=self.cfg.optimizer.Adam.lr,
+                                               betas=(
+                                                   self.cfg.optimizer.Adam.betas.b1,
+                                                   self.cfg.optimizer.Adam.betas.b2
+                                               ))
         discriminator_optimizer = torch.optim.Adam(self.discriminator.parameters(),
-                                                   lr=1e-4)
+                                                   lr=self.cfg.optimizer.Adam.lr,
+                                                   betas=(
+                                                       self.cfg.optimizer.Adam.betas.b1,
+                                                       self.cfg.optimizer.Adam.betas.b2
+                                                   ))
 
-        generator_scheduler = torch.optim.lr_scheduler.StepLR(optimizer=generator_optimizer,
-                                                              gamma=0.1,
-                                                              step_size=20)
-
-        discriminator_scheduler = torch.optim.lr_scheduler.StepLR(optimizer=discriminator_optimizer,
-                                                                  gamma=0.1,
-                                                                  step_size=20)
+        generator_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=generator_optimizer,
+                                                                      **self.cfg.scheduler.params)
+        discriminator_scheduler =torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=discriminator_optimizer,
+                                                                      **self.cfg.scheduler.params)
 
         return [discriminator_optimizer, generator_optimizer], \
                [
                 {"scheduler": discriminator_scheduler,
-                 "monitor": "avg_val_psnr_value",
+                 "monitor": "avg_train_d_loss",
                  "interval": "epoch",
                  "reduce_on_plateau": True},
                {"scheduler": generator_scheduler,
-                "monitor": "avg_val_psnr_value",
+                "monitor": "avg_train_g_loss",
                 "interval": "epoch",
                 "reduce_on_plateau": True
                 }
