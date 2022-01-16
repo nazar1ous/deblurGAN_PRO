@@ -1,5 +1,5 @@
 params:
   gpus: -1
-  max_epochs: 150
+  max_epochs: 300
   precision: 32
   weights_summary: "full"

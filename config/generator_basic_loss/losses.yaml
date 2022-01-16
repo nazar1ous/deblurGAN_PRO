@@ -1,0 +1,4 @@
+l1:
+  loss_lambda: 1.0
+fft_loss:
+  loss_lambda: 0.1

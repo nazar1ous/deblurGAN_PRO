@@ -1,0 +1,7 @@
+class_name: torch.optim.lr_scheduler.ReduceLROnPlateau
+name: plateau
+params:
+  mode: max
+  factor: 0.1
+  patience: 20
+  min_lr: 1e-7

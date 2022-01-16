@@ -9,7 +9,10 @@ from src.utils.dataset import *
 from torch.utils.data import random_split
 from src.models.get_models import get_generator, get_discriminator
 from omegaconf import DictConfig
-from src.models.SRGAN import Loss
+# from src.models.SRGAN import Loss
+# from src.losses.wgan_gp import DiscLossWGANGP
+from src.losses.ragan_ls import RelativisticDiscLossLS
+from src.losses.get_losses import l1_loss, fft_loss, get_adv_loss_module
 
 
 def get_lr(optimizer):
@@ -42,14 +45,18 @@ class LightningModule(pl.LightningModule):
         self.psnr_metric = PSNR(data_range=2.0)
         self.ssim_metric = SSIM(data_range=2.0)
 
-        self._loss = Loss()
-        self.adv_loss = self._loss.get_adv_loss
-        self.vgg_loss = self._loss.get_vgg_loss
-        self.img_loss = self._loss.get_img_loss
-        self.disc_loss = self._loss.get_d_loss
+        self._loss = get_adv_loss_module(self.cfg.adv_loss.name)
+        self.adv_loss = self._loss.get_g_loss
+        self.disc_loss = self._loss.get_loss
+
+        self.adv_loss_lambda = self.cfg.adv_loss.loss_lambda
+        self.l1_loss_lambda = self.cfg.loss.l1.loss_lambda
+
         self.train_dataset = None
         self.valid_dataset = None
         self.test_dataset = None
+
+        self.adv_beta = self.cfg.adv_loss.loss_lambda
 
     def forward(self, source):
         out = self.generator(source)
@@ -97,9 +104,18 @@ class LightningModule(pl.LightningModule):
             self.discriminator.train()
 
         # train discriminator
-        if optimizer_idx == 1:
+        if optimizer_idx == 0:
+            source, target = batch
+            source = source.to(self._device)
+            target = target.to(self._device)
+
+            self.last_source_imgs = source
+            self.last_gt_target_imgs = target
+            self.generated = self(source=source)
+            self.generated.requires_grad = True
+            pass_to_disc = self.generated.clone()
             d_loss = self.disc_loss(self.discriminator,
-                                    self.last_gt_target_imgs, self.generated)
+                                    pass_to_disc, self.last_gt_target_imgs)
 
             tqdm_dict = {'d_loss_train_step': d_loss.detach().clone(),
                          "batch_step": self.global_step * self.batch_size}
@@ -110,18 +126,13 @@ class LightningModule(pl.LightningModule):
             return output
 
         # train generator
-        if optimizer_idx == 0:
-            source, target = batch
-            source = source.to(self._device)
-            target = target.to(self._device)
-
-            self.last_source_imgs = source
-            self.last_gt_target_imgs = target
-            self.generated = self(source=source)
-            adv_loss = self.adv_loss(self.discriminator, self.generated)
-            vgg_loss = self.vgg_loss(self.last_gt_target_imgs, self.generated)
-            img_loss = self.img_loss(self.last_gt_target_imgs, self.generated)
-            g_loss = adv_loss + vgg_loss + img_loss
+        if optimizer_idx == 1:
+            # self.generated = self(source=self.last_source_imgs)
+            adv_loss = self.adv_loss(self.discriminator, self.generated, self.last_gt_target_imgs)
+            l1_loss_ = l1_loss(self.generated, self.last_gt_target_imgs)
+            # vgg_loss = self.vgg_loss(self.last_gt_target_imgs, self.generated)
+            # img_loss = self.img_loss(self.last_gt_target_imgs, self.generated)
+            g_loss = adv_loss + l1_loss_
 
             generated = self.generated.detach().clone()
             target = self.last_gt_target_imgs.detach().clone()
@@ -132,8 +143,8 @@ class LightningModule(pl.LightningModule):
 
             tqdm_dict = {'g_loss_train_step': g_loss.detach().clone(),
                          'adv_loss_train_step': adv_loss.detach().clone(),
-                         'vgg_loss_train_step': vgg_loss.detach().clone(),
-                         'img_loss_train_step': img_loss.detach().clone(),
+                         # 'vgg_loss_train_step': vgg_loss.detach().clone(),
+                         # 'img_loss_train_step': img_loss.detach().clone(),
                          "ssim_value_train_step": ssim_value.detach().clone(),
                          "psnr_value_train_step": psnr_value.detach().clone(),
                          "batch_step": self.global_step * self.batch_size
@@ -170,19 +181,19 @@ class LightningModule(pl.LightningModule):
             print("can't log images in training epoch end")
             print(str(e))
 
-        avg_g_loss = torch.stack([x['log']['g_loss_train_step'] for x in outputs[0]]).mean()
-        avg_img_loss = torch.stack([x['log']['img_loss_train_step'] for x in outputs[0]]).mean()
-        avg_adv_loss = torch.stack([x['log']['adv_loss_train_step'] for x in outputs[0]]).mean()
-        avg_vgg_loss = torch.stack([x['log']['vgg_loss_train_step'] for x in outputs[0]]).mean()
-        avg_d_loss = torch.stack([x['log']['d_loss_train_step'] for x in outputs[1]]).mean()
-        avg_ssim_value = torch.stack([x['log']['ssim_value_train_step'] for x in outputs[0]]).mean()
-        avg_psnr_value = torch.stack([x['log']['psnr_value_train_step'] for x in outputs[0]]).mean()
+        avg_g_loss = torch.stack([x['log']['g_loss_train_step'] for x in outputs[1]]).mean()
+        # avg_img_loss = torch.stack([x['log']['img_loss_train_step'] for x in outputs[0]]).mean()
+        avg_adv_loss = torch.stack([x['log']['adv_loss_train_step'] for x in outputs[1]]).mean()
+        # avg_vgg_loss = torch.stack([x['log']['vgg_loss_train_step'] for x in outputs[0]]).mean()
+        avg_d_loss = torch.stack([x['log']['d_loss_train_step'] for x in outputs[0]]).mean()
+        avg_ssim_value = torch.stack([x['log']['ssim_value_train_step'] for x in outputs[1]]).mean()
+        avg_psnr_value = torch.stack([x['log']['psnr_value_train_step'] for x in outputs[1]]).mean()
 
         tqdm_dict = {'avg_train_g_loss': avg_g_loss,
                      'avg_train_d_loss': avg_d_loss,
                      'avg_train_adv_loss': avg_adv_loss,
-                     'avg_train_vgg_loss': avg_vgg_loss,
-                     'avg_train_img_loss': avg_img_loss,
+                     # 'avg_train_vgg_loss': avg_vgg_loss,
+                     # 'avg_train_img_loss': avg_img_loss,
                      "avg_train_ssim_value": avg_ssim_value,
                      "avg_train_psnr_value": avg_psnr_value,
                      'epoch': self.current_epoch,
@@ -309,14 +320,15 @@ class LightningModule(pl.LightningModule):
                                                                   gamma=0.1,
                                                                   step_size=20)
 
-        return [generator_optimizer, discriminator_optimizer], \
-               [{"scheduler": generator_scheduler,
-                 "monitor": "avg_val_psnr_value",
-                 "interval": "epoch",
-                 "reduce_on_plateau": True
-                 },
+        return [discriminator_optimizer, generator_optimizer], \
+               [
                 {"scheduler": discriminator_scheduler,
                  "monitor": "avg_val_psnr_value",
                  "interval": "epoch",
-                 "reduce_on_plateau": True}
-                ]
+                 "reduce_on_plateau": True},
+               {"scheduler": generator_scheduler,
+                "monitor": "avg_val_psnr_value",
+                "interval": "epoch",
+                "reduce_on_plateau": True
+                }
+               ]
