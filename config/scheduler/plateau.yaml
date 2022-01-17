@@ -3,5 +3,5 @@ name: plateau
 params:
   mode: max
   factor: 0.1
-  patience: 20
+  patience: 10
   min_lr: 1e-7

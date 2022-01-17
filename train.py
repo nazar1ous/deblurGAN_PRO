@@ -28,7 +28,7 @@ def run_train(cfg : DictConfig) -> None:
     trainer.fit(model)
 
 if __name__ == "__main__":
-    seed_everything(40)
+    # seed_everything(40)
     # warnings.filterwarnings("ignore")
     run_train()
 

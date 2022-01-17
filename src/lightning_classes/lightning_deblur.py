@@ -11,7 +11,7 @@ from src.models.get_models import get_generator, get_discriminator
 from omegaconf import DictConfig
 # from src.models.SRGAN import Loss
 # from src.losses.wgan_gp import DiscLossWGANGP
-from src.losses.ragan_ls import RelativisticDiscLossLS
+# from src.losses.ragan_ls import RelativisticDiscLossLS
 from src.losses.get_losses import l1_loss, fft_loss, get_adv_loss_module
 
 
@@ -116,7 +116,7 @@ class LightningModule(pl.LightningModule):
             self.last_gt_target_imgs = target
             self.generated = self(source=source)
             self.generated.requires_grad = True
-            pass_to_disc = self.generated.clone()
+            pass_to_disc = self.generated.detach().clone()
             d_loss = self.disc_loss(net=self.discriminator, fakeB=pass_to_disc, realB=self.last_gt_target_imgs)
 
             tqdm_dict = {'d_loss_train_step': d_loss.detach().clone(),
@@ -130,8 +130,11 @@ class LightningModule(pl.LightningModule):
         # train generator
         if optimizer_idx == 1:
             adv_loss = self.adv_loss_lambda * self.adv_loss(self.discriminator, self.generated, self.last_gt_target_imgs)
+            # adv_loss = 0
+            # fft_loss_ = self.fft_loss_lambda * fft_loss(generated=self.generated, gt_target=self.last_gt_target_imgs)
             l1_loss_ = self.l1_loss_lambda * l1_loss(self.generated, self.last_gt_target_imgs)
             g_loss = adv_loss + l1_loss_
+            # g_loss = l1_loss_ + fft_loss_
 
             generated = self.generated.detach().clone()
             target = self.last_gt_target_imgs.detach().clone()
@@ -324,11 +327,11 @@ class LightningModule(pl.LightningModule):
         return [discriminator_optimizer, generator_optimizer], \
                [
                 {"scheduler": discriminator_scheduler,
-                 "monitor": "avg_train_d_loss",
+                 "monitor": "avg_val_psnr_value",
                  "interval": "epoch",
                  "reduce_on_plateau": True},
                {"scheduler": generator_scheduler,
-                "monitor": "avg_train_g_loss",
+                "monitor": "avg_val_psnr_value",
                 "interval": "epoch",
                 "reduce_on_plateau": True
                 }
