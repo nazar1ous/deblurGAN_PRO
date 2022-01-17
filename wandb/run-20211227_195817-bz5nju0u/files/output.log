@@ -1,0 +1,212 @@
+/home/nkusp/UCU_courses/AI/deblurGan_PRO/venv/lib/python3.8/site-packages/pytorch_lightning/utilities/distributed.py:37: UserWarning: Could not log computational graph since the `model.example_input_array` attribute is not set or `input_array` was not given
+  warnings.warn(*args, **kwargs)
+
+    | Name                             | Type              | Params
+-------------------------------------------------------------------------
+0   | generator                        | Generator         | 1 M   
+1   | generator.in_layer               | Sequential        | 15 K  
+2   | generator.in_layer.0             | Conv2d            | 15 K  
+3   | generator.in_layer.1             | PReLU             | 1     
+4   | generator.res_blocks             | Sequential        | 1 M   
+5   | generator.res_blocks.0           | ResidualBlock     | 74 K  
+6   | generator.res_blocks.0.layers    | Sequential        | 74 K  
+7   | generator.res_blocks.0.layers.0  | Conv2d            | 36 K  
+8   | generator.res_blocks.0.layers.1  | BatchNorm2d       | 128   
+9   | generator.res_blocks.0.layers.2  | PReLU             | 1     
+10  | generator.res_blocks.0.layers.3  | Conv2d            | 36 K  
+11  | generator.res_blocks.0.layers.4  | BatchNorm2d       | 128   
+12  | generator.res_blocks.1           | ResidualBlock     | 74 K  
+13  | generator.res_blocks.1.layers    | Sequential        | 74 K  
+14  | generator.res_blocks.1.layers.0  | Conv2d            | 36 K  
+15  | generator.res_blocks.1.layers.1  | BatchNorm2d       | 128   
+16  | generator.res_blocks.1.layers.2  | PReLU             | 1     
+17  | generator.res_blocks.1.layers.3  | Conv2d            | 36 K  
+18  | generator.res_blocks.1.layers.4  | BatchNorm2d       | 128   
+19  | generator.res_blocks.2           | ResidualBlock     | 74 K  
+20  | generator.res_blocks.2.layers    | Sequential        | 74 K  
+21  | generator.res_blocks.2.layers.0  | Conv2d            | 36 K  
+22  | generator.res_blocks.2.layers.1  | BatchNorm2d       | 128   
+23  | generator.res_blocks.2.layers.2  | PReLU             | 1     
+24  | generator.res_blocks.2.layers.3  | Conv2d            | 36 K  
+25  | generator.res_blocks.2.layers.4  | BatchNorm2d       | 128   
+26  | generator.res_blocks.3           | ResidualBlock     | 74 K  
+27  | generator.res_blocks.3.layers    | Sequential        | 74 K  
+28  | generator.res_blocks.3.layers.0  | Conv2d            | 36 K  
+29  | generator.res_blocks.3.layers.1  | BatchNorm2d       | 128   
+30  | generator.res_blocks.3.layers.2  | PReLU             | 1     
+31  | generator.res_blocks.3.layers.3  | Conv2d            | 36 K  
+32  | generator.res_blocks.3.layers.4  | BatchNorm2d       | 128   
+33  | generator.res_blocks.4           | ResidualBlock     | 74 K  
+34  | generator.res_blocks.4.layers    | Sequential        | 74 K  
+35  | generator.res_blocks.4.layers.0  | Conv2d            | 36 K  
+36  | generator.res_blocks.4.layers.1  | BatchNorm2d       | 128   
+37  | generator.res_blocks.4.layers.2  | PReLU             | 1     
+38  | generator.res_blocks.4.layers.3  | Conv2d            | 36 K  
+39  | generator.res_blocks.4.layers.4  | BatchNorm2d       | 128   
+40  | generator.res_blocks.5           | ResidualBlock     | 74 K  
+41  | generator.res_blocks.5.layers    | Sequential        | 74 K  
+42  | generator.res_blocks.5.layers.0  | Conv2d            | 36 K  
+43  | generator.res_blocks.5.layers.1  | BatchNorm2d       | 128   
+44  | generator.res_blocks.5.layers.2  | PReLU             | 1     
+45  | generator.res_blocks.5.layers.3  | Conv2d            | 36 K  
+46  | generator.res_blocks.5.layers.4  | BatchNorm2d       | 128   
+47  | generator.res_blocks.6           | ResidualBlock     | 74 K  
+48  | generator.res_blocks.6.layers    | Sequential        | 74 K  
+49  | generator.res_blocks.6.layers.0  | Conv2d            | 36 K  
+50  | generator.res_blocks.6.layers.1  | BatchNorm2d       | 128   
+51  | generator.res_blocks.6.layers.2  | PReLU             | 1     
+52  | generator.res_blocks.6.layers.3  | Conv2d            | 36 K  
+53  | generator.res_blocks.6.layers.4  | BatchNorm2d       | 128   
+54  | generator.res_blocks.7           | ResidualBlock     | 74 K  
+55  | generator.res_blocks.7.layers    | Sequential        | 74 K  
+56  | generator.res_blocks.7.layers.0  | Conv2d            | 36 K  
+57  | generator.res_blocks.7.layers.1  | BatchNorm2d       | 128   
+58  | generator.res_blocks.7.layers.2  | PReLU             | 1     
+59  | generator.res_blocks.7.layers.3  | Conv2d            | 36 K  
+60  | generator.res_blocks.7.layers.4  | BatchNorm2d       | 128   
+61  | generator.res_blocks.8           | ResidualBlock     | 74 K  
+62  | generator.res_blocks.8.layers    | Sequential        | 74 K  
+63  | generator.res_blocks.8.layers.0  | Conv2d            | 36 K  
+64  | generator.res_blocks.8.layers.1  | BatchNorm2d       | 128   
+65  | generator.res_blocks.8.layers.2  | PReLU             | 1     
+66  | generator.res_blocks.8.layers.3  | Conv2d            | 36 K  
+67  | generator.res_blocks.8.layers.4  | BatchNorm2d       | 128   
+68  | generator.res_blocks.9           | ResidualBlock     | 74 K  
+69  | generator.res_blocks.9.layers    | Sequential        | 74 K  
+70  | generator.res_blocks.9.layers.0  | Conv2d            | 36 K  
+71  | generator.res_blocks.9.layers.1  | BatchNorm2d       | 128   
+72  | generator.res_blocks.9.layers.2  | PReLU             | 1     
+73  | generator.res_blocks.9.layers.3  | Conv2d            | 36 K  
+74  | generator.res_blocks.9.layers.4  | BatchNorm2d       | 128   
+75  | generator.res_blocks.10          | ResidualBlock     | 74 K  
+76  | generator.res_blocks.10.layers   | Sequential        | 74 K  
+77  | generator.res_blocks.10.layers.0 | Conv2d            | 36 K  
+78  | generator.res_blocks.10.layers.1 | BatchNorm2d       | 128   
+79  | generator.res_blocks.10.layers.2 | PReLU             | 1     
+80  | generator.res_blocks.10.layers.3 | Conv2d            | 36 K  
+81  | generator.res_blocks.10.layers.4 | BatchNorm2d       | 128   
+82  | generator.res_blocks.11          | ResidualBlock     | 74 K  
+83  | generator.res_blocks.11.layers   | Sequential        | 74 K  
+84  | generator.res_blocks.11.layers.0 | Conv2d            | 36 K  
+85  | generator.res_blocks.11.layers.1 | BatchNorm2d       | 128   
+86  | generator.res_blocks.11.layers.2 | PReLU             | 1     
+87  | generator.res_blocks.11.layers.3 | Conv2d            | 36 K  
+88  | generator.res_blocks.11.layers.4 | BatchNorm2d       | 128   
+89  | generator.res_blocks.12          | ResidualBlock     | 74 K  
+90  | generator.res_blocks.12.layers   | Sequential        | 74 K  
+91  | generator.res_blocks.12.layers.0 | Conv2d            | 36 K  
+92  | generator.res_blocks.12.layers.1 | BatchNorm2d       | 128   
+93  | generator.res_blocks.12.layers.2 | PReLU             | 1     
+94  | generator.res_blocks.12.layers.3 | Conv2d            | 36 K  
+95  | generator.res_blocks.12.layers.4 | BatchNorm2d       | 128   
+96  | generator.res_blocks.13          | ResidualBlock     | 74 K  
+97  | generator.res_blocks.13.layers   | Sequential        | 74 K  
+98  | generator.res_blocks.13.layers.0 | Conv2d            | 36 K  
+99  | generator.res_blocks.13.layers.1 | BatchNorm2d       | 128   
+100 | generator.res_blocks.13.layers.2 | PReLU             | 1     
+101 | generator.res_blocks.13.layers.3 | Conv2d            | 36 K  
+102 | generator.res_blocks.13.layers.4 | BatchNorm2d       | 128   
+103 | generator.res_blocks.14          | ResidualBlock     | 74 K  
+104 | generator.res_blocks.14.layers   | Sequential        | 74 K  
+105 | generator.res_blocks.14.layers.0 | Conv2d            | 36 K  
+106 | generator.res_blocks.14.layers.1 | BatchNorm2d       | 128   
+107 | generator.res_blocks.14.layers.2 | PReLU             | 1     
+108 | generator.res_blocks.14.layers.3 | Conv2d            | 36 K  
+109 | generator.res_blocks.14.layers.4 | BatchNorm2d       | 128   
+110 | generator.res_blocks.15          | ResidualBlock     | 74 K  
+111 | generator.res_blocks.15.layers   | Sequential        | 74 K  
+112 | generator.res_blocks.15.layers.0 | Conv2d            | 36 K  
+113 | generator.res_blocks.15.layers.1 | BatchNorm2d       | 128   
+114 | generator.res_blocks.15.layers.2 | PReLU             | 1     
+115 | generator.res_blocks.15.layers.3 | Conv2d            | 36 K  
+116 | generator.res_blocks.15.layers.4 | BatchNorm2d       | 128   
+117 | generator.res_blocks.16          | Conv2d            | 36 K  
+118 | generator.res_blocks.17          | BatchNorm2d       | 128   
+119 | generator.ps_blocks              | Sequential        | 0     
+120 | generator.out_layer              | Sequential        | 15 K  
+121 | generator.out_layer.0            | Conv2d            | 15 K  
+122 | generator.out_layer.1            | Tanh              | 0     
+123 | discriminator                    | Discriminator     | 4 K   
+124 | discriminator.layers             | Sequential        | 4 K   
+125 | discriminator.layers.0           | Conv2d            | 224   
+126 | discriminator.layers.1           | LeakyReLU         | 0     
+127 | discriminator.layers.2           | Conv2d            | 584   
+128 | discriminator.layers.3           | BatchNorm2d       | 16    
+129 | discriminator.layers.4           | LeakyReLU         | 0     
+130 | discriminator.layers.5           | Conv2d            | 1 K   
+131 | discriminator.layers.6           | BatchNorm2d       | 32    
+132 | discriminator.layers.7           | LeakyReLU         | 0     
+133 | discriminator.layers.8           | Conv2d            | 2 K   
+134 | discriminator.layers.9           | BatchNorm2d       | 32    
+135 | discriminator.layers.10          | LeakyReLU         | 0     
+136 | discriminator.layers.11          | AdaptiveAvgPool2d | 0     
+137 | discriminator.layers.12          | Conv2d            | 544   
+138 | discriminator.layers.13          | LeakyReLU         | 0     
+139 | discriminator.layers.14          | Conv2d            | 33    
+140 | discriminator.layers.15          | Flatten           | 0     
+141 | psnr_metric                      | PSNR              | 0     
+142 | ssim_metric                      | SSIM              | 0     
+143 | _loss                            | Loss              | 20 M  
+144 | _loss.vgg                        | Sequential        | 20 M  
+145 | _loss.vgg.0                      | Conv2d            | 1 K   
+146 | _loss.vgg.1                      | ReLU              | 0     
+147 | _loss.vgg.2                      | Conv2d            | 36 K  
+148 | _loss.vgg.3                      | ReLU              | 0     
+149 | _loss.vgg.4                      | MaxPool2d         | 0     
+150 | _loss.vgg.5                      | Conv2d            | 73 K  
+151 | _loss.vgg.6                      | ReLU              | 0     
+152 | _loss.vgg.7                      | Conv2d            | 147 K 
+153 | _loss.vgg.8                      | ReLU              | 0     
+154 | _loss.vgg.9                      | MaxPool2d         | 0     
+155 | _loss.vgg.10                     | Conv2d            | 295 K 
+156 | _loss.vgg.11                     | ReLU              | 0     
+157 | _loss.vgg.12                     | Conv2d            | 590 K 
+158 | _loss.vgg.13                     | ReLU              | 0     
+159 | _loss.vgg.14                     | Conv2d            | 590 K 
+160 | _loss.vgg.15                     | ReLU              | 0     
+161 | _loss.vgg.16                     | Conv2d            | 590 K 
+162 | _loss.vgg.17                     | ReLU              | 0     
+163 | _loss.vgg.18                     | MaxPool2d         | 0     
+164 | _loss.vgg.19                     | Conv2d            | 1 M   
+165 | _loss.vgg.20                     | ReLU              | 0     
+166 | _loss.vgg.21                     | Conv2d            | 2 M   
+167 | _loss.vgg.22                     | ReLU              | 0     
+168 | _loss.vgg.23                     | Conv2d            | 2 M   
+169 | _loss.vgg.24                     | ReLU              | 0     
+170 | _loss.vgg.25                     | Conv2d            | 2 M   
+171 | _loss.vgg.26                     | ReLU              | 0     
+172 | _loss.vgg.27                     | MaxPool2d         | 0     
+173 | _loss.vgg.28                     | Conv2d            | 2 M   
+174 | _loss.vgg.29                     | ReLU              | 0     
+175 | _loss.vgg.30                     | Conv2d            | 2 M   
+176 | _loss.vgg.31                     | ReLU              | 0     
+177 | _loss.vgg.32                     | Conv2d            | 2 M   
+178 | _loss.vgg.33                     | ReLU              | 0     
+179 | _loss.vgg.34                     | Conv2d            | 2 M   
+180 | _loss.vgg.35                     | ReLU              | 0     
+Traceback (most recent call last):
+  File "/home/nkusp/UCU_courses/AI/deblurGan_PRO/train.py", line 34, in <module>
+    trainer.fit(model)
+  File "/home/nkusp/UCU_courses/AI/deblurGan_PRO/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/states.py", line 48, in wrapped_fn
+    result = fn(self, *args, **kwargs)
+  File "/home/nkusp/UCU_courses/AI/deblurGan_PRO/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1084, in fit
+    results = self.accelerator_backend.train(model)
+  File "/home/nkusp/UCU_courses/AI/deblurGan_PRO/venv/lib/python3.8/site-packages/pytorch_lightning/accelerators/cpu_backend.py", line 39, in train
+    results = self.trainer.run_pretrain_routine(model)
+  File "/home/nkusp/UCU_courses/AI/deblurGan_PRO/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1224, in run_pretrain_routine
+    self._run_sanity_check(ref_model, model)
+  File "/home/nkusp/UCU_courses/AI/deblurGan_PRO/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1249, in _run_sanity_check
+    self.reset_val_dataloader(ref_model)
+  File "/home/nkusp/UCU_courses/AI/deblurGan_PRO/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/data_loading.py", line 337, in reset_val_dataloader
+    self.num_val_batches, self.val_dataloaders = self._reset_eval_dataloader(model, 'val')
+  File "/home/nkusp/UCU_courses/AI/deblurGan_PRO/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/data_loading.py", line 266, in _reset_eval_dataloader
+    dataloaders = self.request_dataloader(getattr(model, f'{mode}_dataloader'))
+  File "/home/nkusp/UCU_courses/AI/deblurGan_PRO/venv/lib/python3.8/site-packages/pytorch_lightning/trainer/data_loading.py", line 360, in request_dataloader
+    dataloader = dataloader_fx()
+  File "/home/nkusp/UCU_courses/AI/deblurGan_PRO/src/lightning_classes/lightning_deblur_SRGAN.py", line 55, in val_dataloader
+    return get_valid_dataloader(self.dataset_path, self.batch_size, num_workers=4)
+  File "/home/nkusp/UCU_courses/AI/deblurGan_PRO/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1130, in __getattr__
+    raise AttributeError("'{}' object has no attribute '{}'".format(
+AttributeError: 'LightningModule' object has no attribute 'dataset_path'
+/home/nkusp/UCU_courses/AI/deblurGan_PRO/venv/lib/python3.8/site-packages/wandb/lib/redirect.py:264: DeprecationWarning: isAlive() is deprecated, use is_alive() instead
+  if self._thread.isAlive():

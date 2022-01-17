@@ -98,7 +98,7 @@ class LightningModule(pl.LightningModule):
          num_workers=self.cfg.data.num_workers
         )
 
-    def training_step(self, batch, batch_nb, optimizer_idx):
+    def training_step(self, batch, batch_nb, optimizer_idx=0):
 
         if not self.generator.training:
             self.generator.train()
@@ -115,7 +115,7 @@ class LightningModule(pl.LightningModule):
             self.last_source_imgs = source
             self.last_gt_target_imgs = target
             self.generated = self(source=source)
-            self.generated.requires_grad = True
+            # self.generated.requires_grad = True
             pass_to_disc = self.generated.detach().clone()
             d_loss = self.disc_loss(net=self.discriminator, fakeB=pass_to_disc, realB=self.last_gt_target_imgs)
 
@@ -129,8 +129,8 @@ class LightningModule(pl.LightningModule):
 
         # train generator
         if optimizer_idx == 1:
+            self.generated = self(source=self.last_source_imgs)
             adv_loss = self.adv_loss_lambda * self.adv_loss(self.discriminator, self.generated, self.last_gt_target_imgs)
-            # adv_loss = 0
             # fft_loss_ = self.fft_loss_lambda * fft_loss(generated=self.generated, gt_target=self.last_gt_target_imgs)
             l1_loss_ = self.l1_loss_lambda * l1_loss(self.generated, self.last_gt_target_imgs)
             g_loss = adv_loss + l1_loss_
@@ -300,6 +300,8 @@ class LightningModule(pl.LightningModule):
         return output
 
     def backward(self, trainer, loss, optimizer, optimizer_idx: int) -> None:
+        # loss.backward()
+        # return
         if optimizer_idx == 0:
             loss.backward(retain_graph=True)
         elif optimizer_idx == 1:

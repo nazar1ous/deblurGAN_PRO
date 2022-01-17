@@ -1,0 +1,22 @@
+{
+    "os": "Linux-5.11.0-43-generic-x86_64-with-glibc2.29",
+    "python": "3.8.10",
+    "heartbeatAt": "2021-12-27T17:58:19.259522",
+    "startedAt": "2021-12-27T17:58:17.358841",
+    "docker": null,
+    "cpu_count": 8,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "codePath": "deblurGan_PRO/train.py",
+    "program": "/home/nkusp/UCU_courses/AI/deblurGan_PRO/train.py",
+    "git": {
+        "remote": "git@github.com:nazar1ous/UCU_ai_course.git",
+        "commit": "f73ed1103cc284de903349a7c27cf6d611b4b839"
+    },
+    "email": "nkusp@softserveinc.com",
+    "root": "/home/nkusp/UCU_courses/AI",
+    "host": "5CD9126FY4",
+    "username": "nkusp",
+    "executable": "/home/nkusp/UCU_courses/AI/deblurGan_PRO/venv/bin/python"
+}

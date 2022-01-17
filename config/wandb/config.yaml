@@ -1,0 +1,4 @@
+use_wandb: True
+project: "test-project"
+entity: "kuspys-lutchyn"
+run_name: "MIMO-Unet_pure_resblocks=1_l1=0.1_ragan_ls=0.001"

@@ -1,5 +1,5 @@
 defaults:
-  - generator: mimo_fpn
+  - generator: mimo_unet_pure
   - discriminator: n_layers
   - dataset: GOPRO
   - data: srgan
